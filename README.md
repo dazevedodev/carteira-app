@@ -56,4 +56,4 @@ supabase/        banco e migrações
 
 ---
 
-Feito por [Daniel Dazevedo](https://dazevedo.dev) · DAZEVEDO
+Feito por [Daniel D'Azevedo](https://dazevedo.dev) · DAZEVEDO
