@@ -1,5 +1,6 @@
 # Carteira de Aluguel
-n[![CI](https://github.com/dazevedodev/carteira-app/actions/workflows/ci.yml/badge.svg)](https://github.com/dazevedodev/carteira-app/actions/workflows/ci.yml)
+
+[![CI](https://github.com/dazevedodev/carteira-app/actions/workflows/ci.yml/badge.svg)](https://github.com/dazevedodev/carteira-app/actions/workflows/ci.yml)
 
 **Gestão de imóveis, contratos e repasses** para quem administra o aluguel de vários proprietários.
 
