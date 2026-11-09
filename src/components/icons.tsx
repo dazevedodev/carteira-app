@@ -17,6 +17,17 @@ export function HomeIcon({ className }: IconProps) {
   );
 }
 
+// Símbolo da Carteira de Aluguel: a casa dentro do ciclo do aluguel que volta todo mês.
+export function LogoIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} {...base} strokeWidth={5}>
+      <path d="M50 22A22 22 0 1 0 54 34" />
+      <path d="M54 18v7h-7" />
+      <path d="M22 33l10-9 10 9v11H22z" />
+    </svg>
+  );
+}
+
 export function BuildingIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" className={className} {...base}>

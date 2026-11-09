@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   HomeIcon,
+  LogoIcon,
   BuildingIcon,
   FileTextIcon,
   WalletIcon,
@@ -49,7 +50,7 @@ export function Sidebar({
     <aside className="hidden w-64 shrink-0 flex-col border-r border-chrome-line bg-chrome px-4 py-6 text-chrome-fg md:flex">
       <div className="mb-8 flex items-center gap-2.5 px-2">
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-stamp-soft text-stamp">
-          <HomeIcon className="h-5 w-5" />
+          <LogoIcon className="h-5 w-5" />
         </span>
         <div>
           <p className="text-sm font-semibold leading-tight">{nome}</p>

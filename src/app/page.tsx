@@ -2,7 +2,7 @@ import Link from "next/link";
 import "./landing.css";
 import { DashboardPreview, RentCalculator } from "./LandingInteractive";
 import {
-  HomeIcon,
+  LogoIcon,
   BuildingIcon,
   UsersIcon,
   WalletIcon,
@@ -13,7 +13,7 @@ function LogoLockup() {
   return (
     <span className="logo-lockup">
       <span className="logo-mark">
-        <HomeIcon className="h-5 w-5" />
+        <LogoIcon className="h-5 w-5" />
       </span>
       <span className="logo-text">
         Carteira

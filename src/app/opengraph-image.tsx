@@ -34,15 +34,16 @@ export default function OpengraphImage() {
             <svg
               width="52"
               height="52"
-              viewBox="0 0 24 24"
+              viewBox="0 0 64 64"
               fill="none"
               stroke="#34d399"
-              strokeWidth="2"
+              strokeWidth="5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M4 11.5 12 4l8 7.5" />
-              <path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9" />
+              <path d="M50 22A22 22 0 1 0 54 34" />
+              <path d="M54 18v7h-7" />
+              <path d="M22 33l10-9 10 9v11H22z" />
             </svg>
           </div>
           <div style={{ display: "flex", fontSize: 34, color: "#93a39c" }}>
