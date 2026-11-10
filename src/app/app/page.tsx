@@ -28,6 +28,8 @@ type TenantCalcFields = {
 };
 
 type TenantAtivo = TenantCalcFields & {
+  data_inicio: string;
+  data_fim: string | null;
   units: { label: string; properties: { endereco: string } | null } | null;
 };
 
@@ -61,7 +63,7 @@ export default async function VisaoGeralPage() {
     supabase
       .from("tenants")
       .select(
-        "id, valor_aluguel, dia_vencimento, multa_percent, juros_mes_percent, indice_correcao, units(label, properties(endereco))"
+        "id, valor_aluguel, dia_vencimento, multa_percent, juros_mes_percent, indice_correcao, data_inicio, data_fim, units(label, properties(endereco))"
       )
       .eq("ativo", true)
       .lte("data_inicio", mesFim)
@@ -159,6 +161,74 @@ export default async function VisaoGeralPage() {
     .sort((a, b) => a.dia_vencimento - b.dia_vencimento)
     .slice(0, 5);
 
+  // Alertas: contratos perto do fim e aniversário do contrato (hora de reajustar).
+  const DIA_MS = 86400000;
+  const hojeZero = new Date();
+  hojeZero.setHours(0, 0, 0, 0);
+  const dataLocal = (iso: string) => {
+    const [y, m, d] = iso.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  };
+  const fmtCurta = (d: Date) =>
+    `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+
+  type Alerta = {
+    id: string;
+    imovel: string;
+    texto: string;
+    quando: string;
+    dias: number;
+    urgente: boolean;
+  };
+  const alertas: Alerta[] = [];
+  for (const t of tenantAtivoList) {
+    const imovel = [t.units?.properties?.endereco, t.units?.label]
+      .filter(Boolean)
+      .join(" - ");
+
+    if (t.data_fim) {
+      const fim = dataLocal(t.data_fim);
+      const dias = Math.round((fim.getTime() - hojeZero.getTime()) / DIA_MS);
+      if (dias < 0) {
+        alertas.push({
+          id: t.id + "-fim",
+          imovel,
+          texto: "O prazo do contrato já terminou e ele continua ativo.",
+          quando: `há ${-dias} dia${-dias === 1 ? "" : "s"}`,
+          dias,
+          urgente: true,
+        });
+      } else if (dias <= 60) {
+        alertas.push({
+          id: t.id + "-fim",
+          imovel,
+          texto: `O contrato termina em ${fmtCurta(fim)}.`,
+          quando: dias === 0 ? "hoje" : `em ${dias} dia${dias === 1 ? "" : "s"}`,
+          dias,
+          urgente: dias <= 15,
+        });
+      }
+    }
+
+    const inicio = dataLocal(t.data_inicio);
+    const proximo = new Date(hojeZero.getFullYear(), inicio.getMonth(), inicio.getDate());
+    if (proximo < hojeZero) proximo.setFullYear(proximo.getFullYear() + 1);
+    const anos = proximo.getFullYear() - inicio.getFullYear();
+    const diasAniv = Math.round((proximo.getTime() - hojeZero.getTime()) / DIA_MS);
+    const antesDoFim = !t.data_fim || proximo <= dataLocal(t.data_fim);
+    if (anos >= 1 && diasAniv <= 45 && antesDoFim) {
+      alertas.push({
+        id: t.id + "-aniv",
+        imovel,
+        texto: `Aniversário de ${anos} ano${anos === 1 ? "" : "s"} do contrato em ${fmtCurta(proximo)}: hora de ver o reajuste do aluguel${t.indice_correcao !== "Nenhum" ? ` (${t.indice_correcao})` : ""}.`,
+        quando: diasAniv === 0 ? "hoje" : `em ${diasAniv} dia${diasAniv === 1 ? "" : "s"}`,
+        dias: diasAniv,
+        urgente: diasAniv <= 7,
+      });
+    }
+  }
+  alertas.sort((a, b) => a.dias - b.dias);
+
   const hoje = capitalize(
     new Date().toLocaleDateString("pt-BR", {
       day: "2-digit",
@@ -248,6 +318,42 @@ export default async function VisaoGeralPage() {
           </p>
         </div>
       </div>
+
+      {alertas.length > 0 && (
+        <div className="rounded-2xl border border-warn/30 bg-surface p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-ink">Atenção</h2>
+            <Link
+              href="/app/inquilinos"
+              className="text-xs font-medium text-stamp hover:underline"
+            >
+              Ver contratos →
+            </Link>
+          </div>
+          <ul className="flex flex-col gap-2">
+            {alertas.slice(0, 6).map((a) => (
+              <li
+                key={a.id}
+                className="flex flex-wrap items-start justify-between gap-2 rounded-xl bg-surface-2 px-3 py-2 text-sm"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium text-ink">{a.imovel}</p>
+                  <p className="text-xs text-ink-2">{a.texto}</p>
+                </div>
+                <span
+                  className={
+                    a.urgente
+                      ? "shrink-0 rounded-full bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger"
+                      : "shrink-0 rounded-full bg-warn-soft px-2 py-0.5 text-xs font-medium text-warn"
+                  }
+                >
+                  {a.quando}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
         <div className="rounded-2xl border border-line bg-surface p-4 lg:col-span-3">

@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireAccountId } from "@/lib/account";
 import { revalidatePath } from "next/cache";
+import { falhou } from "@/lib/falha";
 
 export async function addIndice(formData: FormData) {
   const tipo = String(formData.get("tipo") || "");
@@ -14,7 +15,7 @@ export async function addIndice(formData: FormData) {
   const supabase = await createClient();
   const accountId = await requireAccountId(supabase);
 
-  await supabase
+  const { error: erro1 } = await supabase
     .from("indices")
     .upsert(
       {
@@ -25,6 +26,7 @@ export async function addIndice(formData: FormData) {
       },
       { onConflict: "account_id,tipo,mes_referencia" }
     );
+  falhou(erro1, "/app/indices", "salvar o índice");
 
   revalidatePath("/app/indices");
 }
@@ -34,7 +36,8 @@ export async function deleteIndice(formData: FormData) {
   if (!id) return;
 
   const supabase = await createClient();
-  await supabase.from("indices").delete().eq("id", id);
+  const { error: erro1 } = await supabase.from("indices").delete().eq("id", id);
+  falhou(erro1, "/app/indices", "remover o índice");
 
   revalidatePath("/app/indices");
 }

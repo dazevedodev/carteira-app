@@ -16,11 +16,13 @@ import {
   SettingsIcon,
   LogOutIcon,
   HelpCircleIcon,
+  FolderIcon,
 } from "@/components/icons";
 import type { NavItem } from "./Sidebar";
 
 const ICONS: Record<string, (props: { className?: string }) => React.ReactElement> = {
   "/app/imoveis": BuildingIcon,
+  "/app/arquivos": FolderIcon,
   "/app/inquilinos": FileTextIcon,
   "/app/manutencao": WrenchIcon,
   "/app/indices": BarChartIcon,

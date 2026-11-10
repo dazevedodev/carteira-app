@@ -14,6 +14,7 @@ import {
   SettingsIcon,
   LogOutIcon,
   HelpCircleIcon,
+  FolderIcon,
 } from "@/components/icons";
 
 export type NavItem = { href: string; label: string };
@@ -23,6 +24,7 @@ const ICONS: Record<string, (props: { className?: string }) => React.ReactElemen
   "/app/imoveis": BuildingIcon,
   "/app/inquilinos": FileTextIcon,
   "/app/pagamentos": WalletIcon,
+  "/app/arquivos": FolderIcon,
   "/app/manutencao": WrenchIcon,
   "/app/indices": BarChartIcon,
   "/app/clientes": UsersIcon,

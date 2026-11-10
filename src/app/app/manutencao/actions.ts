@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireAccountId } from "@/lib/account";
 import { revalidatePath } from "next/cache";
+import { falhou } from "@/lib/falha";
 
 export async function createMaintenance(formData: FormData) {
   const unitId = String(formData.get("unit_id") || "");
@@ -17,7 +18,7 @@ export async function createMaintenance(formData: FormData) {
   const supabase = await createClient();
   const accountId = await requireAccountId(supabase);
 
-  await supabase.from("maintenance").insert({
+  const { error: erro1 } = await supabase.from("maintenance").insert({
     account_id: accountId,
     unit_id: unitId,
     descricao,
@@ -26,6 +27,7 @@ export async function createMaintenance(formData: FormData) {
     custo,
     obs,
   });
+  falhou(erro1, "/app/manutencao", "criar a manutenção");
 
   revalidatePath("/app/manutencao");
 }
@@ -36,7 +38,8 @@ export async function updateMaintenanceStatus(formData: FormData) {
   if (!id || !status) return;
 
   const supabase = await createClient();
-  await supabase.from("maintenance").update({ status }).eq("id", id);
+  const { error: erro1 } = await supabase.from("maintenance").update({ status }).eq("id", id);
+  falhou(erro1, "/app/manutencao", "atualizar o status");
 
   revalidatePath("/app/manutencao");
 }
@@ -46,7 +49,8 @@ export async function deleteMaintenance(formData: FormData) {
   if (!id) return;
 
   const supabase = await createClient();
-  await supabase.from("maintenance").delete().eq("id", id);
+  const { error: erro1 } = await supabase.from("maintenance").delete().eq("id", id);
+  falhou(erro1, "/app/manutencao", "excluir a manutenção");
 
   revalidatePath("/app/manutencao");
 }
@@ -61,13 +65,14 @@ export async function createItem(formData: FormData) {
   if (!maintenanceId || !tipo) return;
 
   const supabase = await createClient();
-  await supabase.from("maintenance_items").insert({
+  const { error: erro1 } = await supabase.from("maintenance_items").insert({
     maintenance_id: maintenanceId,
     tipo,
     responsavel,
     contato,
     custo,
   });
+  falhou(erro1, "/app/manutencao", "adicionar o item");
 
   revalidatePath("/app/manutencao");
 }
@@ -78,7 +83,8 @@ export async function updateItemStatus(formData: FormData) {
   if (!id || !status) return;
 
   const supabase = await createClient();
-  await supabase.from("maintenance_items").update({ status }).eq("id", id);
+  const { error: erro1 } = await supabase.from("maintenance_items").update({ status }).eq("id", id);
+  falhou(erro1, "/app/manutencao", "atualizar o item");
 
   revalidatePath("/app/manutencao");
 }
@@ -88,7 +94,8 @@ export async function deleteItem(formData: FormData) {
   if (!id) return;
 
   const supabase = await createClient();
-  await supabase.from("maintenance_items").delete().eq("id", id);
+  const { error: erro1 } = await supabase.from("maintenance_items").delete().eq("id", id);
+  falhou(erro1, "/app/manutencao", "remover o item");
 
   revalidatePath("/app/manutencao");
 }

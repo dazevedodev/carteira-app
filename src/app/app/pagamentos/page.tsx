@@ -11,6 +11,7 @@ import {
 import { savePayment, registerComprovante, removeComprovante } from "./actions";
 import { DirectUpload } from "@/components/DirectUpload";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { CobrancaWhatsApp } from "@/components/CobrancaWhatsApp";
 
 type Tenant = {
   id: string;
@@ -27,7 +28,7 @@ type Tenant = {
       clients: { nome: string } | null;
     } | null;
   } | null;
-  moradores: { nome: string }[];
+  moradores: { nome: string; telefone: string | null }[];
 };
 
 type Payment = {
@@ -60,7 +61,7 @@ export default async function PagamentosPage(props: {
     supabase
       .from("tenants")
       .select(
-        "id, valor_aluguel, dia_vencimento, multa_percent, juros_mes_percent, indice_correcao, units(label, properties(endereco, client_id, clients(nome))), moradores(nome)"
+        "id, valor_aluguel, dia_vencimento, multa_percent, juros_mes_percent, indice_correcao, units(label, properties(endereco, client_id, clients(nome))), moradores(nome, telefone)"
       )
       .eq("ativo", true)
       .lte("data_inicio", mesFim)
@@ -226,6 +227,25 @@ export default async function PagamentosPage(props: {
                 );
                 const nomeInquilino =
                   tenant.moradores[0]?.nome ?? "Sem morador cadastrado";
+                const telefoneMorador =
+                  tenant.moradores.find((m) => m.telefone)?.telefone ?? "";
+                const primeiroNome = tenant.moradores[0]?.nome?.split(" ")[0];
+                const imovelTexto = [
+                  tenant.units?.properties?.endereco,
+                  tenant.units?.label,
+                ]
+                  .filter(Boolean)
+                  .join(" - ");
+                const mensagemCobranca = [
+                  `Olá${primeiroNome ? `, ${primeiroNome}` : ""}! Tudo bem?`,
+                  "",
+                  `Passando para lembrar do aluguel de ${fmtMesReferencia(mesReferencia)} (${imovelTexto}), com vencimento no dia ${tenant.dia_vencimento}.`,
+                  calc.diasAtraso > 0
+                    ? `Está com ${calc.diasAtraso} dia${calc.diasAtraso === 1 ? "" : "s"} de atraso. Aluguel ${fmtMoney(tenant.valor_aluguel)} + multa ${fmtMoney(calc.multa)} + juros ${fmtMoney(calc.juros)}${calc.correcao > 0 ? ` + correção ${fmtMoney(calc.correcao)}` : ""} = total de ${fmtMoney(calc.total)}.`
+                    : `Valor: ${fmtMoney(tenant.valor_aluguel)}.`,
+                  "",
+                  "Se já pagou, me envie o comprovante, por favor. Obrigado!",
+                ].join("\n");
 
                 return (
                   <div key={tenant.id} className="rounded-lg bg-surface-2 p-3">
@@ -329,6 +349,24 @@ export default async function PagamentosPage(props: {
                         Salvar
                       </button>
                     </form>
+
+                    <div className="mt-3">
+                      {payment?.data_pagamento ? (
+                        <a
+                          href={`/app/pagamentos/recibo?tenant=${tenant.id}&mes=${mesReferencia}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-block rounded-lg border border-line px-3 py-1.5 text-sm font-medium text-ink hover:bg-surface"
+                        >
+                          Gerar recibo (PDF)
+                        </a>
+                      ) : (
+                        <CobrancaWhatsApp
+                          telefone={telefoneMorador}
+                          mensagem={mensagemCobranca}
+                        />
+                      )}
+                    </div>
 
                     <div className="mt-3 border-t border-line pt-3">
                       <p className="mb-1 text-xs text-ink-2">

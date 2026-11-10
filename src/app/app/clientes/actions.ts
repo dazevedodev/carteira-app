@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireAccountId } from "@/lib/account";
 import { revalidatePath } from "next/cache";
+import { falhou } from "@/lib/falha";
 
 export async function addCliente(formData: FormData) {
   const nome = String(formData.get("nome") || "").trim();
@@ -15,13 +16,14 @@ export async function addCliente(formData: FormData) {
   const supabase = await createClient();
   const accountId = await requireAccountId(supabase);
 
-  await supabase.from("clients").insert({
+  const { error: erro1 } = await supabase.from("clients").insert({
     account_id: accountId,
     nome,
     telefone,
     email,
     obs,
   });
+  falhou(erro1, "/app/clientes", "adicionar o cliente");
 
   revalidatePath("/app/clientes");
 }
@@ -31,7 +33,8 @@ export async function deleteCliente(formData: FormData) {
   if (!id) return;
 
   const supabase = await createClient();
-  await supabase.from("clients").delete().eq("id", id);
+  const { error: erro1 } = await supabase.from("clients").delete().eq("id", id);
+  falhou(erro1, "/app/clientes", "excluir o cliente");
 
   revalidatePath("/app/clientes");
 }
@@ -48,7 +51,7 @@ export async function saveRepasse(formData: FormData) {
   const supabase = await createClient();
   const accountId = await requireAccountId(supabase);
 
-  await supabase.from("repasses").upsert(
+  const { error: erro1 } = await supabase.from("repasses").upsert(
     {
       account_id: accountId,
       client_id: clientId,
@@ -59,6 +62,7 @@ export async function saveRepasse(formData: FormData) {
     },
     { onConflict: "client_id,mes_referencia" }
   );
+  falhou(erro1, "/app/clientes", "salvar o repasse");
 
   revalidatePath("/app/clientes");
 }

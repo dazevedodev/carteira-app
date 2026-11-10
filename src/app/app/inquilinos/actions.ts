@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireAccountId } from "@/lib/account";
 import { revalidatePath } from "next/cache";
+import { falhou } from "@/lib/falha";
 
 export async function createTenant(formData: FormData) {
   const unitId = String(formData.get("unit_id") || "");
@@ -24,7 +25,7 @@ export async function createTenant(formData: FormData) {
   const supabase = await createClient();
   const accountId = await requireAccountId(supabase);
 
-  await supabase.from("tenants").insert({
+  const { error: erro1 } = await supabase.from("tenants").insert({
     account_id: accountId,
     unit_id: unitId,
     valor_aluguel: valorAluguel,
@@ -38,6 +39,7 @@ export async function createTenant(formData: FormData) {
     contrato_assinado: contratoAssinado,
     obs_contrato: obsContrato,
   });
+  falhou(erro1, "/app/inquilinos", "criar o contrato");
 
   revalidatePath("/app/inquilinos");
 }
@@ -47,7 +49,8 @@ export async function endTenant(formData: FormData) {
   if (!id) return;
 
   const supabase = await createClient();
-  await supabase.from("tenants").update({ ativo: false }).eq("id", id);
+  const { error: erro1 } = await supabase.from("tenants").update({ ativo: false }).eq("id", id);
+  falhou(erro1, "/app/inquilinos", "encerrar o contrato");
 
   revalidatePath("/app/inquilinos");
 }
@@ -61,7 +64,8 @@ export async function addMorador(formData: FormData) {
   if (!tenantId || !nome) return;
 
   const supabase = await createClient();
-  await supabase.from("moradores").insert({ tenant_id: tenantId, nome, telefone, email });
+  const { error: erro1 } = await supabase.from("moradores").insert({ tenant_id: tenantId, nome, telefone, email });
+  falhou(erro1, "/app/inquilinos", "adicionar o morador");
 
   revalidatePath("/app/inquilinos");
 }
@@ -71,7 +75,8 @@ export async function removeMorador(formData: FormData) {
   if (!id) return;
 
   const supabase = await createClient();
-  await supabase.from("moradores").delete().eq("id", id);
+  const { error: erro1 } = await supabase.from("moradores").delete().eq("id", id);
+  falhou(erro1, "/app/inquilinos", "remover o morador");
 
   revalidatePath("/app/inquilinos");
 }
@@ -88,12 +93,13 @@ export async function registerDocument(formData: FormData) {
 
   if (!tenantId || !path.startsWith(`${accountId}/`)) return;
 
-  await supabase.from("documents").insert({
+  const { error: erro1 } = await supabase.from("documents").insert({
     account_id: accountId,
     tenant_id: tenantId,
     nome,
     storage_path: path,
   });
+  falhou(erro1, "/app/inquilinos", "registrar o documento");
 
   revalidatePath("/app/inquilinos");
 }
@@ -108,7 +114,8 @@ export async function deleteDocument(formData: FormData) {
   if (storagePath) {
     await supabase.storage.from("documents").remove([storagePath]);
   }
-  await supabase.from("documents").delete().eq("id", id);
+  const { error: erro1 } = await supabase.from("documents").delete().eq("id", id);
+  falhou(erro1, "/app/inquilinos", "remover o documento");
 
   revalidatePath("/app/inquilinos");
 }
@@ -121,7 +128,7 @@ export async function updateTenant(formData: FormData) {
   const prazoIndeterminado = formData.get("prazo_indeterminado") === "on";
 
   const supabase = await createClient();
-  await supabase
+  const { error: erro1 } = await supabase
     .from("tenants")
     .update({
       valor_aluguel: Number(formData.get("valor_aluguel") || 0),
@@ -138,6 +145,7 @@ export async function updateTenant(formData: FormData) {
       obs_contrato: String(formData.get("obs_contrato") || ""),
     })
     .eq("id", id);
+  falhou(erro1, "/app/inquilinos", "salvar as alterações do contrato");
 
   revalidatePath("/app/inquilinos");
   revalidatePath("/app/pagamentos");

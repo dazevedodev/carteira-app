@@ -4,6 +4,7 @@ import { randomBytes } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { requireAccountId } from "@/lib/account";
 import { revalidatePath } from "next/cache";
+import { falhou } from "@/lib/falha";
 
 export async function setModo(formData: FormData) {
   const modo = String(formData.get("modo") || "");
@@ -12,7 +13,8 @@ export async function setModo(formData: FormData) {
   const supabase = await createClient();
   const accountId = await requireAccountId(supabase);
 
-  await supabase.from("accounts").update({ modo }).eq("id", accountId);
+  const { error: erro1 } = await supabase.from("accounts").update({ modo }).eq("id", accountId);
+  falhou(erro1, "/app", "salvar o modo de uso");
 
   revalidatePath("/app", "layout");
 }
@@ -23,7 +25,8 @@ export async function createInvite(formData: FormData) {
   const code = randomBytes(6).toString("hex");
 
   const supabase = await createClient();
-  await supabase.from("invites").insert({ code, nota });
+  const { error: erro1 } = await supabase.from("invites").insert({ code, nota });
+  falhou(erro1, "/app/configuracoes", "gerar o convite");
 
   revalidatePath("/app/configuracoes");
 }
@@ -33,7 +36,8 @@ export async function deleteInvite(formData: FormData) {
   if (!id) return;
 
   const supabase = await createClient();
-  await supabase.from("invites").delete().eq("id", id);
+  const { error: erro1 } = await supabase.from("invites").delete().eq("id", id);
+  falhou(erro1, "/app/configuracoes", "cancelar o convite");
 
   revalidatePath("/app/configuracoes");
 }

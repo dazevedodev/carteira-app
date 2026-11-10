@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireAccountId } from "@/lib/account";
 import { revalidatePath } from "next/cache";
+import { falhou } from "@/lib/falha";
 
 export async function savePayment(formData: FormData) {
   const tenantId = String(formData.get("tenant_id") || "");
@@ -17,7 +18,7 @@ export async function savePayment(formData: FormData) {
   const supabase = await createClient();
   const accountId = await requireAccountId(supabase);
 
-  await supabase
+  const { error: erro1 } = await supabase
     .from("payments")
     .upsert(
       {
@@ -31,6 +32,7 @@ export async function savePayment(formData: FormData) {
       },
       { onConflict: "tenant_id,mes_referencia" }
     );
+  falhou(erro1, `/app/pagamentos?mes=${mesReferencia}`, "salvar o pagamento");
 
   revalidatePath("/app/pagamentos");
 }
@@ -52,7 +54,7 @@ export async function registerComprovante(formData: FormData) {
     .eq("mes_referencia", mesReferencia)
     .maybeSingle();
 
-  await supabase.from("payments").upsert(
+  const { error: erro1 } = await supabase.from("payments").upsert(
     {
       account_id: accountId,
       tenant_id: tenantId,
@@ -61,6 +63,7 @@ export async function registerComprovante(formData: FormData) {
     },
     { onConflict: "tenant_id,mes_referencia" }
   );
+  falhou(erro1, "/app/pagamentos", "registrar o comprovante");
 
   if (atual?.comprovante_path && atual.comprovante_path !== path) {
     await supabase.storage.from("documents").remove([atual.comprovante_path]);
@@ -78,11 +81,12 @@ export async function removeComprovante(formData: FormData) {
   const supabase = await createClient();
 
   if (path) await supabase.storage.from("documents").remove([path]);
-  await supabase
+  const { error: erro1 } = await supabase
     .from("payments")
     .update({ comprovante_path: null })
     .eq("tenant_id", tenantId)
     .eq("mes_referencia", mesReferencia);
+  falhou(erro1, "/app/pagamentos", "remover o comprovante");
 
   revalidatePath("/app/pagamentos");
 }
