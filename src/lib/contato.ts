@@ -6,3 +6,5 @@ export const CONTATO_WHATSAPP_URL =
   encodeURIComponent(
     "Olá! Vi o Carteira de Aluguel e gostaria de pedir acesso ao sistema."
   );
+
+export const SITE_URL = "https://carteiradealuguel.com.br";

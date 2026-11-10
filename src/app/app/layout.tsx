@@ -21,7 +21,11 @@ export default async function AppLayout({
   }
 
   const profile = await ensureProfile(supabase, user);
-  const account = profile?.accounts ?? undefined;
+  if (!profile) {
+    redirect("/auth/sair?motivo=sem-convite");
+  }
+
+  const account = profile.accounts ?? undefined;
   const isProfissional = account?.modo === "profissional";
 
   const navItems = [

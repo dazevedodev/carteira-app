@@ -1,47 +1,48 @@
 "use server";
 
-import { timingSafeEqual } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { ensureProfile } from "@/lib/account";
 import { SERVICO_FORA_DO_AR, isServicoForaDoAr } from "@/lib/auth-errors";
 import { redirect } from "next/navigation";
-
-// O cadastro é por convite: só entra quem tem o código de acesso (SIGNUP_CODE).
-// Sem a variável configurada, ninguém consegue criar conta.
-function codigoValido(informado: string) {
-  const esperado = process.env.SIGNUP_CODE;
-  if (!esperado) return false;
-  const a = Buffer.from(informado.trim());
-  const b = Buffer.from(esperado);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
 
 export async function signup(formData: FormData) {
   const nome = String(formData.get("nome") || "").trim();
   const email = String(formData.get("email") || "").trim();
   const senha = String(formData.get("senha") || "");
   const modo = String(formData.get("modo") || "pessoal");
-  const codigo = String(formData.get("codigo") || "");
+  const codigo = String(formData.get("codigo") || "").trim();
 
   if (!nome || !email || !senha) {
     redirect("/signup?erro=" + encodeURIComponent("Preencha todos os campos."));
   }
 
-  if (!codigoValido(codigo)) {
+  const supabase = await createClient();
+
+  // O convite é de uso único e só o chefe gera. Aqui é só um aviso rápido; a
+  // trava de verdade está no banco, na criação da carteira.
+  const { data: conviteOk, error: conviteError } = await supabase.rpc(
+    "invite_is_valid",
+    { p_code: codigo.trim() }
+  );
+  if (conviteError) {
+    redirect(
+      "/signup?erro=" +
+        encodeURIComponent("O cadastro está indisponível no momento. Tente mais tarde.")
+    );
+  }
+  if (!conviteOk) {
     redirect(
       "/signup?erro=" +
         encodeURIComponent(
-          "Código de acesso inválido. Peça o código para a gente pelo WhatsApp ou e-mail."
+          "Convite inválido ou já usado. Peça um novo para a gente pelo WhatsApp ou e-mail."
         )
     );
   }
 
-  const supabase = await createClient();
-
   const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
     email,
     password: senha,
-    options: { data: { nome, modo } },
+    options: { data: { nome, modo, codigo: codigo.trim() } },
   });
 
   if (signUpError) {

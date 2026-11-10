@@ -34,7 +34,11 @@ export async function ensureProfile(
   // que nesse momento (perfil ainda não existe) nunca passa. Dentro de uma
   // função no banco dá pra gerar o id sem depender de RETURNING.
   const { data: created, error: createError } = await supabase
-    .rpc("create_account_and_profile", { p_nome: nome, p_modo: modo })
+    .rpc("create_account_and_profile", {
+      p_nome: nome,
+      p_modo: modo,
+      p_codigo: (user.user_metadata?.codigo as string | undefined) ?? null,
+    })
     .single();
 
   if (createError || !created) {

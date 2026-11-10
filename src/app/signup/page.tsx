@@ -8,7 +8,7 @@ const inputClass =
   "rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-stamp";
 
 export default async function SignupPage(props: {
-  searchParams: Promise<{ erro?: string }>;
+  searchParams: Promise<{ erro?: string; codigo?: string }>;
 }) {
   const params = await props.searchParams;
 
@@ -36,9 +36,10 @@ export default async function SignupPage(props: {
 
           <form action={signup} className="mt-6 flex flex-col gap-4">
             <label className="flex flex-col gap-1 text-sm text-ink">
-              Código de acesso
+              Código do convite
               <input
                 name="codigo"
+                defaultValue={params.codigo ?? ""}
                 type="text"
                 required
                 autoComplete="off"
