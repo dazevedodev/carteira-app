@@ -8,6 +8,12 @@ import {
   WalletIcon,
   WrenchIcon,
 } from "@/components/icons";
+import {
+  CONTATO_EMAIL,
+  CONTATO_TELEFONE,
+  CONTATO_TEL_URL,
+  CONTATO_WHATSAPP_URL,
+} from "@/lib/contato";
 
 function LogoLockup() {
   return (
@@ -30,9 +36,19 @@ export default function Home() {
       <nav className="nav">
         <div className="wrap">
           <LogoLockup />
-          <Link className="cta" href="/signup">
-            Criar conta
-          </Link>
+          <div className="nav-actions">
+            <Link className="nav-link" href="/login">
+              Entrar
+            </Link>
+            <a
+              className="cta"
+              href={CONTATO_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Quero acesso
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -44,7 +60,7 @@ export default function Home() {
                 <rect x="2.5" y="4" width="19" height="13" rx="1.5" />
                 <path d="M8 21h8M12 17v4" />
               </svg>
-              Sistema web
+              Sistema web · acesso por convite
             </span>
             <span className="eyebrow">Para administradoras e corretores de aluguel</span>
             <h1>
@@ -57,12 +73,17 @@ export default function Home() {
               reformas controladas.
             </p>
             <div className="actions">
-              <Link className="btn primary" href="/signup">
-                Criar conta grátis
-              </Link>
-              <a className="btn ghost" href="#recursos">
-                Ver como funciona
+              <a
+                className="btn primary"
+                href={CONTATO_WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Quero acesso
               </a>
+              <Link className="btn ghost" href="/login">
+                Já tenho acesso
+              </Link>
             </div>
             <ul className="quick-features">
               <li>
@@ -287,13 +308,28 @@ export default function Home() {
         <section className="pad" id="contato">
           <div className="wrap">
             <div className="cta-band">
-              <span className="badge">Pronto pra usar</span>
-              <h2>Administra aluguel de clientes? Comece a organizar sua carteira agora.</h2>
-              <p>Grátis pra começar — administradoras, corretores e quem cuida do aluguel da própria família.</p>
+              <span className="badge">Acesso por convite</span>
+              <h2>Quer usar o Carteira de Aluguel?</h2>
+              <p>
+                O sistema é liberado para poucas pessoas. Fale com a gente e
+                combinamos o seu acesso.
+              </p>
               <div className="actions">
-                <Link className="btn primary" href="/signup">Criar conta grátis</Link>
-                <Link className="btn ghost" href="/login">Já tem conta? Entrar</Link>
+                <a
+                  className="btn primary"
+                  href={CONTATO_WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Chamar no WhatsApp
+                </a>
+                <a className="btn ghost" href={`mailto:${CONTATO_EMAIL}`}>
+                  {CONTATO_EMAIL}
+                </a>
               </div>
+              <p className="cta-note">
+                {CONTATO_TELEFONE} · Já tem acesso? <Link href="/login">Entrar</Link>
+              </p>
             </div>
           </div>
         </section>
@@ -306,6 +342,8 @@ export default function Home() {
             <Link href="/termos">Termos de uso</Link>
             <Link href="/privacidade">Privacidade</Link>
             <Link href="/ajuda">Ajuda</Link>
+            <a href={`mailto:${CONTATO_EMAIL}`}>{CONTATO_EMAIL}</a>
+            <a href={CONTATO_TEL_URL}>{CONTATO_TELEFONE}</a>
           </nav>
           <span className="fine">
             © 2026 ZantteBR · carteiradealuguel.com.br

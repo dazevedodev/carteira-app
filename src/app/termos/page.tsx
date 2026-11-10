@@ -24,8 +24,7 @@ export default function TermosPage() {
       <ul>
         <li>Informe dados verdadeiros e mantenha sua senha em segurança.</li>
         <li>
-          Você é responsável pelo que acontece na sua conta, inclusive pelas
-          pessoas a quem der acesso pelo link de convite.
+          Você é responsável pelo que acontece na sua conta.
         </li>
         <li>Cada carteira só é visível para quem tem acesso a ela.</li>
       </ul>
@@ -52,10 +51,11 @@ export default function TermosPage() {
         funcionamento ininterrupto. Mantenha cópia dos documentos importantes.
       </p>
 
-      <h2>6. Preço</h2>
+      <h2>6. Acesso</h2>
       <p>
-        Hoje o uso é gratuito. Se algum recurso passar a ser pago, avisaremos
-        com antecedência e você poderá escolher continuar ou encerrar a conta.
+        O sistema tem acesso restrito, liberado por convite da ZantteBR, e
+        não é vendido no momento. Podemos suspender ou encerrar um acesso a
+        qualquer momento, avisando você sempre que possível.
       </p>
 
       <h2>7. Responsabilidade</h2>
@@ -68,7 +68,7 @@ export default function TermosPage() {
       <h2>8. Encerramento</h2>
       <p>
         Você pode parar de usar o sistema quando quiser e pedir a exclusão da
-        sua conta e dos seus dados escrevendo para contato@zantte.com.br.
+        sua conta e dos seus dados escrevendo para contato@zantte.com.br ou pelo WhatsApp (11) 98893-9120.
         Podemos suspender contas que violem estes termos.
       </p>
 

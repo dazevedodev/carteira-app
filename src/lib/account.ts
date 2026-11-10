@@ -27,30 +27,6 @@ export async function ensureProfile(
 
   const nome = (user.user_metadata?.nome as string) || user.email || "Usuário";
   const modo = (user.user_metadata?.modo as string) || "pessoal";
-  const contaConvite = user.user_metadata?.conta_id as string | undefined;
-
-  // Convite: a pessoa está entrando numa conta que já existe (link de
-  // convite gerado em Configurações), então só criamos o profile dela
-  // apontando pra essa account_id -- sem criar uma conta nova.
-  if (contaConvite) {
-    const { error: inviteError } = await supabase.from("profiles").insert({
-      id: user.id,
-      account_id: contaConvite,
-      nome,
-    });
-
-    if (inviteError) {
-      return null;
-    }
-
-    const { data: newProfile } = await supabase
-      .from("profiles")
-      .select("nome, account_id, accounts(nome, modo)")
-      .eq("id", user.id)
-      .single();
-
-    return (newProfile as unknown as ProfileWithAccount) ?? null;
-  }
 
   // Usa uma função no banco (RPC) em vez de dois .insert() direto nas
   // tabelas: pedir pro Postgres "devolver" (RETURNING) a linha de accounts

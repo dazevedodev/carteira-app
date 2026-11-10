@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-const SUPORTE_EMAIL = "contato@zantte.com.br";
+import { CONTATO_EMAIL } from "@/lib/contato";
 
 const inputClass =
   "rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-ink outline-none focus:border-stamp";
@@ -16,7 +15,7 @@ export function ContactForm() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const corpo = `${mensagem}\n\n— ${nome || "Sem nome informado"}`;
-    const url = `mailto:${SUPORTE_EMAIL}?subject=${encodeURIComponent(
+    const url = `mailto:${CONTATO_EMAIL}?subject=${encodeURIComponent(
       assunto || "Contato pelo sistema Carteira de Aluguel"
     )}&body=${encodeURIComponent(corpo)}`;
     window.location.href = url;
@@ -67,8 +66,8 @@ export function ContactForm() {
         <p className="rounded-lg bg-stamp-soft px-3 py-2 text-sm text-stamp">
           Seu app de e-mail deve abrir com a mensagem pronta — é só clicar em
           enviar. Se nada abrir, escreva direto para{" "}
-          <a href={`mailto:${SUPORTE_EMAIL}`} className="underline">
-            {SUPORTE_EMAIL}
+          <a href={`mailto:${CONTATO_EMAIL}`} className="underline">
+            {CONTATO_EMAIL}
           </a>
           .
         </p>

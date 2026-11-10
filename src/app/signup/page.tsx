@@ -2,14 +2,15 @@ import Link from "next/link";
 import { signup } from "./actions";
 import { PasswordField } from "@/components/PasswordField";
 
+export const metadata = { title: "Criar conta", robots: { index: false } };
+
 const inputClass =
   "rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-stamp";
 
 export default async function SignupPage(props: {
-  searchParams: Promise<{ erro?: string; conta?: string }>;
+  searchParams: Promise<{ erro?: string }>;
 }) {
   const params = await props.searchParams;
-  const contaId = params.conta;
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 bg-surface-2 px-4 py-16">
@@ -22,13 +23,9 @@ export default async function SignupPage(props: {
         </Link>
 
         <div className="rounded-2xl border border-line bg-surface p-8 shadow-sm">
-          <h1 className="text-2xl font-semibold text-ink">
-            {contaId ? "Aceitar convite" : "Criar conta"}
-          </h1>
+          <h1 className="text-2xl font-semibold text-ink">Criar conta</h1>
           <p className="mt-1 text-sm text-ink-2">
-            {contaId
-              ? "Você foi convidado a participar de uma carteira existente."
-              : "Comece a organizar seus aluguéis."}
+            O acesso é por convite. Use o código que você recebeu.
           </p>
 
           {params.erro && (
@@ -38,6 +35,16 @@ export default async function SignupPage(props: {
           )}
 
           <form action={signup} className="mt-6 flex flex-col gap-4">
+            <label className="flex flex-col gap-1 text-sm text-ink">
+              Código de acesso
+              <input
+                name="codigo"
+                type="text"
+                required
+                autoComplete="off"
+                className={inputClass}
+              />
+            </label>
             <label className="flex flex-col gap-1 text-sm text-ink">
               Seu nome
               <input name="nome" type="text" required className={inputClass} />
@@ -57,27 +64,23 @@ export default async function SignupPage(props: {
               />
             </label>
 
-            {contaId ? (
-              <input type="hidden" name="conta_id" value={contaId} />
-            ) : (
-              <fieldset className="flex flex-col gap-2 text-sm text-ink">
-                <legend className="mb-1">Como você vai usar a carteira?</legend>
-                <label className="flex items-center gap-2 rounded-lg border border-line px-3 py-2">
-                  <input type="radio" name="modo" value="pessoal" defaultChecked />
-                  Imóveis próprios e da família
-                </label>
-                <label className="flex items-center gap-2 rounded-lg border border-line px-3 py-2">
-                  <input type="radio" name="modo" value="profissional" />
-                  Administro imóveis de clientes/terceiros
-                </label>
-              </fieldset>
-            )}
+            <fieldset className="flex flex-col gap-2 text-sm text-ink">
+              <legend className="mb-1">Como você vai usar a carteira?</legend>
+              <label className="flex items-center gap-2 rounded-lg border border-line px-3 py-2">
+                <input type="radio" name="modo" value="pessoal" defaultChecked />
+                Imóveis próprios e da família
+              </label>
+              <label className="flex items-center gap-2 rounded-lg border border-line px-3 py-2">
+                <input type="radio" name="modo" value="profissional" />
+                Administro imóveis de clientes/terceiros
+              </label>
+            </fieldset>
 
             <button
               type="submit"
               className="mt-2 rounded-lg bg-stamp px-4 py-2 text-sm font-medium text-stamp-ink hover:bg-stamp/90"
             >
-              {contaId ? "Entrar na carteira" : "Criar conta"}
+              Criar conta
             </button>
             <p className="text-center text-xs text-ink-3">
               Ao continuar, você concorda com os{" "}
@@ -101,9 +104,9 @@ export default async function SignupPage(props: {
         </div>
 
         <p className="mt-4 text-center text-xs text-ink-3">
-          Deu algum problema?{" "}
+          Sem código?{" "}
           <Link href="/ajuda" className="underline hover:text-ink-2">
-            Fale com a gente
+            Peça acesso
           </Link>
         </p>
       </div>

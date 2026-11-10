@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { ContactForm } from "@/components/ContactForm";
 import { MailIcon } from "@/components/icons";
+import {
+  CONTATO_EMAIL,
+  CONTATO_TELEFONE,
+  CONTATO_TEL_URL,
+  CONTATO_WHATSAPP_URL,
+} from "@/lib/contato";
 
-const SUPORTE_EMAIL = "contato@zantte.com.br";
 
 export default function AjudaPage() {
   return (
@@ -18,23 +23,36 @@ export default function AjudaPage() {
         <div className="rounded-2xl border border-line bg-surface p-8 shadow-sm">
           <h1 className="text-2xl font-semibold text-ink">Precisa de ajuda?</h1>
           <p className="mt-1 text-sm text-ink-2">
-            Conte o que está acontecendo que a gente responde por e-mail.
+            Quer acesso ao sistema ou está com algum problema? Conte para a gente.
           </p>
 
           <div className="mt-6">
             <ContactForm />
           </div>
 
-          <p className="mt-6 flex items-center gap-2 text-xs text-ink-3">
-            <MailIcon className="h-4 w-4 shrink-0" />
-            Prefere mandar direto?{" "}
+          <div className="mt-6 flex flex-col gap-2 border-t border-line pt-4 text-sm text-ink-2">
+            <p className="text-xs font-medium uppercase tracking-wide text-ink-3">
+              Prefere falar direto?
+            </p>
             <a
-              href={`mailto:${SUPORTE_EMAIL}`}
-              className="underline hover:text-ink-2"
+              href={CONTATO_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-stamp underline"
             >
-              {SUPORTE_EMAIL}
+              WhatsApp {CONTATO_TELEFONE}
             </a>
-          </p>
+            <a href={CONTATO_TEL_URL} className="underline hover:text-ink">
+              Ligar para {CONTATO_TELEFONE}
+            </a>
+            <a
+              href={`mailto:${CONTATO_EMAIL}`}
+              className="flex items-center gap-2 underline hover:text-ink"
+            >
+              <MailIcon className="h-4 w-4 shrink-0" />
+              {CONTATO_EMAIL}
+            </a>
+          </div>
         </div>
       </div>
 

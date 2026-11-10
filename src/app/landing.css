@@ -143,3 +143,10 @@
 .landing footer .links { display: flex; gap: 18px; font-size: 13px; color: var(--ink-2); }
 .landing footer .links a { text-decoration: none; }
 .landing footer .links a:hover { color: var(--ink); text-decoration: underline; }
+
+.landing .nav-actions { display: flex; align-items: center; gap: 18px; }
+.landing .nav .nav-link { font-size: 13px; font-weight: 600; color: var(--chrome-fg-muted); text-decoration: none; }
+.landing .nav .nav-link:hover { color: var(--chrome-fg); }
+.landing .cta-band .cta-note { margin: 22px 0 0; font-size: 13px; color: var(--ink-3); }
+.landing .cta-band .cta-note a { color: var(--ink-2); text-decoration: underline; }
+.landing footer .links { flex-wrap: wrap; }
