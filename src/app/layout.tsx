@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Karla, IBM_Plex_Mono, Special_Elite, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -32,6 +32,10 @@ const specialElite = Special_Elite({
   weight: "400",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0c1110",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://carteiradealuguel.com.br"),
   title: {
@@ -40,6 +44,11 @@ export const metadata: Metadata = {
   },
   description:
     "Sistema web para administradoras, corretores e proprietários: imóveis, inquilinos, pagamentos com multa e juros automáticos, comissão, repasses e reformas em um só lugar.",
+  appleWebApp: {
+    capable: true,
+    title: "Carteira",
+    statusBarStyle: "black-translucent",
+  },
   openGraph: {
     type: "website",
     locale: "pt_BR",
