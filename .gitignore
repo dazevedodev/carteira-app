@@ -43,3 +43,6 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# SQL com segredos (nunca vai para o GitHub)
+*.local.sql
