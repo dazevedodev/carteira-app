@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAccountId } from "@/lib/account";
 import { setModo, createInvite, deleteInvite } from "./actions";
 import { CopyButton } from "@/components/CopyButton";
+import { InstallButton } from "@/components/InstallButton";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { fmtDate } from "@/lib/calc";
 import { CONTATO_EMAIL, CONTATO_TELEFONE, CONTATO_WHATSAPP_URL, SITE_URL } from "@/lib/contato";
@@ -162,6 +163,35 @@ export default async function ConfiguracoesPage() {
           </ul>
         </div>
       )}
+
+      <div className="rounded-xl border border-line bg-surface p-4">
+        <h3 className="font-medium text-ink">Instalar como aplicativo</h3>
+        <p className="mt-1 text-sm text-ink-2">
+          No Windows, o sistema abre numa janela própria, com ícone no Menu
+          Iniciar e na barra de tarefas, sem a barra do navegador.
+        </p>
+        <div className="mt-3">
+          <InstallButton
+            mostrarIcone={false}
+            className="rounded-lg bg-stamp px-4 py-2 text-sm font-medium text-stamp-ink hover:bg-stamp/90"
+          />
+        </div>
+        <ul className="mt-3 flex flex-col gap-1 text-sm text-ink-2">
+          <li>
+            <strong className="text-ink">Edge ou Chrome (Windows):</strong> clique no
+            ícone de instalar na barra de endereço, ou em ⋯ → Aplicativos → Instalar
+            este site como aplicativo.
+          </li>
+          <li>
+            <strong className="text-ink">Android (Chrome):</strong> menu ⋮ → Instalar
+            aplicativo.
+          </li>
+          <li>
+            <strong className="text-ink">iPhone (Safari):</strong> compartilhar →
+            Adicionar à Tela de Início.
+          </li>
+        </ul>
+      </div>
 
       <div className="rounded-xl border border-line bg-surface p-4">
         <h3 className="font-medium text-ink">Ajuda</h3>

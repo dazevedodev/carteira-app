@@ -189,3 +189,12 @@ export function FolderIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function DownloadIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} {...base}>
+      <path d="M12 4v11M7.5 11 12 15.5 16.5 11" />
+      <path d="M5 19.5h14" />
+    </svg>
+  );
+}

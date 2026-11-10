@@ -16,6 +16,7 @@ import {
   HelpCircleIcon,
   FolderIcon,
 } from "@/components/icons";
+import { InstallButton } from "@/components/InstallButton";
 
 export type NavItem = { href: string; label: string };
 
@@ -82,6 +83,7 @@ export function Sidebar({
       </nav>
 
       <div className="flex flex-col gap-1 border-t border-chrome-line pt-3">
+        <InstallButton className="flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-stamp transition-colors hover:bg-chrome-line" />
         <Link
           href="/ajuda"
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-chrome-fg-muted transition-colors hover:bg-chrome-line hover:text-chrome-fg"
