@@ -1,9 +1,11 @@
 -- Modelo de acesso: uma conta "chefe" (a sua) libera convites de uso único; cada
 -- pessoa convidada cria o próprio login e recebe o próprio sistema, separado.
 --
--- COMO RODAR: Supabase > SQL Editor > New query > cole TUDO > troque
--- COLOQUE_SEU_EMAIL_AQUI (mais abaixo) pelo e-mail do seu login > Run.
--- Se o e-mail não for encontrado, o script para sem apagar nada.
+-- COMO RODAR: Supabase > SQL Editor > New query > cole TUDO > Run.
+-- No fim aparece UMA linha com o link do primeiro convite: abra esse link e crie
+-- a sua conta. A primeira conta criada vira a chefe automaticamente.
+-- ATENÇÃO: este script APAGA todas as contas e dados que existem hoje (só roda a
+-- limpeza se ainda não houver chefe; depois disso, rodar de novo não apaga nada).
 
 -- ---------------------------------------------------------------------------
 -- 1) Quem é o chefe (só dá para ler a própria linha; ninguém escreve pelo app)
@@ -96,6 +98,11 @@ begin
   select v_account_id, t.tipo, t.mes_referencia, t.valor_percent
   from index_templates t;
 
+  -- Enquanto não existe chefe, a primeira carteira criada (com o convite inicial) vira a chefe.
+  if not exists (select 1 from admins) then
+    insert into admins (user_id) values (v_user);
+  end if;
+
   return query select v_account_id, v_account_nome, v_modo;
 end;
 $$;
@@ -109,30 +116,26 @@ drop policy if exists "usuario cria o proprio perfil" on profiles;
 drop policy if exists "qualquer usuario autenticado cria uma conta" on accounts;
 
 -- ---------------------------------------------------------------------------
--- 5) Deixa SÓ a sua conta e a torna a chefe. APAGA todas as outras contas,
---    com todos os dados delas. Não dá para desfazer.
+-- 5) Zera tudo e cria o primeiro convite (para você criar a conta chefe).
+--    Só roda se ainda não existir chefe. APAGA contas e dados atuais.
 -- ---------------------------------------------------------------------------
 do $$
-declare
-  v_email text := 'COLOQUE_SEU_EMAIL_AQUI';  -- <<< troque pelo e-mail do SEU login
-  v_user uuid;
-  v_account uuid;
 begin
-  select u.id into v_user from auth.users u where lower(u.email) = lower(v_email);
-  if v_user is null then
-    raise exception 'E-mail "%" não encontrado. Troque COLOQUE_SEU_EMAIL_AQUI pelo e-mail do seu login e rode de novo.', v_email;
+  if exists (select 1 from admins) then
+    raise notice 'Já existe uma conta chefe: nada foi apagado.';
+    return;
   end if;
 
-  select p.account_id into v_account from profiles p where p.id = v_user;
-  if v_account is null then
-    raise exception 'Essa conta ainda não entrou no sistema. Entre uma vez em carteiradealuguel.com.br com ela e rode de novo.';
-  end if;
+  delete from accounts;
+  delete from auth.users;
+  delete from invites;
 
-  insert into admins (user_id) values (v_user) on conflict do nothing;
-
-  delete from accounts where id <> v_account;
-  delete from auth.users where id <> v_user;
-
-  raise notice 'Pronto: ficou só a conta % (chefe).', v_email;
+  insert into invites (code, nota)
+  values (encode(gen_random_bytes(6), 'hex'), 'Chefe (primeira conta)');
 end;
 $$;
+
+-- Resultado: copie o link desta linha, abra no navegador e crie a sua conta.
+select 'https://carteiradealuguel.com.br/signup?codigo=' || code as link_do_primeiro_convite
+from invites
+where nota = 'Chefe (primeira conta)' and used_at is null;
